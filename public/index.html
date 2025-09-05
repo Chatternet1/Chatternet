@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Chatternet — Home</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root{
+    --brand:#3498db; --brand-2:#2980b9;
+    --bg:#f0f2f5; --card:#fff; --ink:#0f172a; --muted:#667085; --line:#e6eaf2;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Segoe UI',Arial,sans-serif}
+  .top-bar{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--brand);color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+  .top-bar h2{margin:0;font-weight:800}
+  .page{max-width:1100px;margin:18px auto;padding:0 12px 28px}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media (max-width:760px){ .grid{grid-template-columns:1fr} }
+  .card{background:var(--card);border:1px solid rgba(0,0,0,.08);border-radius:14px;box-shadow:0 6px 16px rgba(0,0,0,.08);padding:14px}
+  a.link{display:block;padding:12px;border:1px solid #e5e7eb;border-radius:12px;background:#fafafa;text-decoration:none;color:inherit;font-weight:700}
+  a.link:hover{background:#f1f5ff;border-color:#dbeafe}
+  .muted{color:var(--muted)}
+  .ok{color:#059669;font-weight:700}
+  .bad{color:#b91c1c;font-weight:700}
+  .list{display:grid;gap:8px}
+</style>
+</head>
+<body>
+  <div class="top-bar">
+    <h2>Chatternet</h2>
+    <div id="health" class="muted">Checking server…</div>
+  </div>
+
+  <div class="page">
+    <div class="card">
+      <h3 style="margin:0 0 8px;font-size:26px;font-weight:800">Welcome</h3>
+      <p class="muted" style="margin:6px 0 12px">
+        Start here. These links open each page that we’ll add to <code>/public/</code>.
+      </p>
+      <div class="grid">
+        <div class="list">
+          <a class="link" href="settings.html">Settings / Account</a>
+          <a class="link" href="profile.html">Profile</a>
+          <a class="link" href="messages.html">Messages</a>
+          <a class="link" href="friends.html">Friends</a>
+          <a class="link" href="feed.html">Feed</a>
+        </div>
+        <div class="list">
+          <a class="link" href="media.html">Media Library</a>
+          <a class="link" href="music.html">Music</a>
+          <a class="link" href="groups.html">Groups</a>
+          <a class="link" href="events.html">Events</a>
+          <a class="link" href="about.html">About</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <h3 style="margin:0 0 8px;font-size:20px;font-weight:800">Status</h3>
+      <div id="statusBox" class="muted">—</div>
+    </div>
+  </div>
+
+<script>
+// check backend health so you know Render is serving the API
+(async function(){
+  const healthEl = document.getElementById('health');
+  const box = document.getElementById('statusBox');
+  try{
+    const r = await fetch('/api/health');
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const j = await r.json();
+    healthEl.innerHTML = '<span class="ok">API OK</span>';
+    box.innerHTML =
+      'Time: ' + j.time + '<br>' +
+      'Node: ' + j.node + '<br>' +
+      'Data file: ' + (j.dataFile||'—');
+  }catch(e){
+    healthEl.innerHTML = '<span class="bad">API offline</span>';
+    box.textContent = 'Could not reach /api/health. If this is on Render, wait for the instance to boot or check logs.';
+  }
+})();
+</script>
+</body>
+</html>
